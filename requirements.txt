@@ -19,3 +19,4 @@ notifiers
 pyotp
 gunicorn
 pytz
+undetected-chromedriver
