@@ -825,6 +825,7 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
             goToURL(browser, 'https://bing.com')
         time.sleep(2)
         searchbar = browser.find_element(By.ID, 'sb_form_q')
+        print("SearchBar Found!...")
         if FAST or SUPER_FAST:
             searchbar.send_keys(word)
             time.sleep(calculateSleep(1))
