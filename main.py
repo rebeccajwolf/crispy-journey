@@ -2898,7 +2898,7 @@ def farmer():
                 updateLogs()
             prYellow('********************' + hide_email(CURRENT_ACCOUNT) + '********************')
             if not LOGS[CURRENT_ACCOUNT]['PC searches']:
-                browser = browserSetupv2(
+                browser = browserSetup(
                     False,
                     account.get('proxy', None)
                 )
@@ -2962,7 +2962,7 @@ def farmer():
                 browser.quit()
 
             if MOBILE:
-                browser = browserSetupv2(
+                browser = browserSetup(
                     True,
                     account.get('proxy', None)
                 )
