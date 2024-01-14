@@ -26,7 +26,8 @@ from notifiers import get_notifier
 from random_word import RandomWords
 from userAgentGenerator import GenerateUserAgent
 from selenium import webdriver as edgedriver
-import undetected_chromedriver as webdriver
+import undetected_chromedriver as uc
+from selenium import webdriver
 from selenium.common.exceptions import (ElementNotInteractableException, NoAlertPresentException,
                                         NoSuchElementException, SessionNotCreatedException, TimeoutException,
                                         UnexpectedAlertPresentException, JavascriptException,
@@ -141,7 +142,7 @@ def browserSetup(isMobile: bool = False, proxy: str = None) -> WebDriver:
     if ARGS.edge:
         options = EdgeOptions()
     else:
-        options = webdriver.ChromeOptions()
+        options = uc.ChromeOptions()
     if ARGS.session or ARGS.account_browser:
         if not isMobile:
             options.add_argument(
@@ -195,7 +196,82 @@ def browserSetup(isMobile: bool = False, proxy: str = None) -> WebDriver:
     if ARGS.edge:
         browser = edgedriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)
     else:
-        browser = webdriver.Chrome(driver_executable_path="chromedriver", options=options)
+        browser = uc.Chrome(driver_executable_path="chromedriver", options=options)
+    return browser
+
+
+def browserSetupv2(isMobile: bool = False, proxy: str = None) -> WebDriver:
+    """Create Chrome browser"""
+    user_agent = GenerateUserAgent().userAgent(browserConfig={}, mobile=isMobile)[0]
+    from selenium.webdriver.chrome.options import Options as ChromeOptions
+    from selenium.webdriver.edge.options import Options as EdgeOptions
+    if ARGS.edge:
+        options = EdgeOptions()
+    else:
+        options = ChromeOptions()
+    if ARGS.session or ARGS.account_browser:
+        if not isMobile:
+            options.add_argument(
+                f'--user-data-dir={Path(__file__).parent}/Profiles/{CURRENT_ACCOUNT}/PC')
+        else:
+            options.add_argument(
+                f'--user-data-dir={Path(__file__).parent}/Profiles/{CURRENT_ACCOUNT}/Mobile')
+    options.add_argument("--user-agent=" + user_agent)
+    options.add_argument('--lang=' + LANG.split("-")[0])
+    options.add_argument('--disable-blink-features=AutomationControlled')
+    options.add_argument('--disable-blink-features=AutomationControlled')
+    prefs = {"profile.default_content_setting_values.geolocation" :2,
+            "profile.default_content_setting_values.notifications": 2,
+            "credentials_enable_service": False,
+            "profile.password_manager_enabled": False,
+            "webrtc.ip_handling_policy": "disable_non_proxied_udp",
+             "webrtc.multiple_routes_enabled": False,
+             "webrtc.nonproxied_udp_enabled": False}
+    if ARGS.no_images:
+        prefs["profile.managed_default_content_settings.images"] = 2
+    if ARGS.account_browser:
+        prefs["detach"] = True
+    if proxy is not None:
+        if isProxyWorking(proxy):
+            options.add_argument(f'--proxy-server={proxy}')
+            prBlue(f"Using proxy: {proxy}")
+        else:
+            if ARGS.recheck_proxy:
+                prYellow(
+                    "[PROXY] Your entered proxy is not working, rechecking the provided proxy.")
+                time.sleep(5)
+                if isProxyWorking(proxy):
+                    options.add_argument(f'--proxy-server={proxy}')
+                    prBlue(f"Using proxy: {proxy}")
+                elif ARGS.skip_if_proxy_dead:
+                    raise ProxyIsDeadException
+                else:
+                    prYellow(
+                        "[PROXY] Your entered proxy is not working, continuing without proxy.")
+            elif ARGS.skip_if_proxy_dead:
+                raise ProxyIsDeadException
+            else:
+                prYellow(
+                    "[PROXY] Your entered proxy is not working, continuing without proxy.")
+    options.add_experimental_option("prefs", prefs)
+    options.add_experimental_option("useAutomationExtension", False)
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    if ARGS.headless and ARGS.account_browser is None:
+        options.add_argument("--headless=new")
+    options.add_argument('--log-level=3')
+    options.add_argument("--start-maximized")
+    options.add_argument("--disable-popup-blocking")
+    options.add_argument("--disable-features=UserAgentClientHint")
+    if platform.system() == 'Linux':
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+    if ARGS.edge:
+        browser = edgedriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)
+    else:
+        try:
+            browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+        except Exception:
+            browser = webdriver.Chrome(options=options)
     return browser
 
 
@@ -2829,7 +2905,7 @@ def farmer():
                 updateLogs()
             prYellow('********************' + hide_email(CURRENT_ACCOUNT) + '********************')
             if not LOGS[CURRENT_ACCOUNT]['PC searches']:
-                browser = browserSetup(
+                browser = browserSetupv2(
                     False,
                     account.get('proxy', None)
                 )
@@ -2893,7 +2969,7 @@ def farmer():
                 browser.quit()
 
             if MOBILE:
-                browser = browserSetup(
+                browser = browserSetupv2(
                     True,
                     account.get('proxy', None)
                 )
