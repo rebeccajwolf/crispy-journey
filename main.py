@@ -519,17 +519,17 @@ def checkBingLogin(browser: WebDriver):
     """Check if logged in to Bing"""
     goToURL(browser, 'https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F')
     time.sleep(calculateSleep(15))
-    while True:
-        currentUrl = urllib.parse.urlparse(browser.current_url)
-        if "bing.com" in currentUrl.hostname and currentUrl.path == "/":
-            time.sleep(3)
+    if not browser.isElementExists(By.XPATH, '//*[@id="id_s" and @aria-hidden="true"]'):
+        while True:
+            goToURL(browser, 'https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F')
+            time.sleep(calculateSleep(8))
             tryDismissBingCookieBanner(browser)
             try:
-                if checkIfBingLogin(browser):
+                if isElementExists(browser, By.XPATH, '//*[@id="id_s" and @aria-hidden="true"]'):
                     return
             except Exception as exc:
                 displayError(exc)
-        time.sleep(1)
+    time.sleep(1)
 
 
 def handleUnusualActivity(browser: WebDriver, isMobile: bool = False):
@@ -906,15 +906,12 @@ def completeDailySet(browser: WebDriver):
             browser.find_element(By.XPATH, '//*[@id="modal-host"]/div[2]/button').click()
             return
         time.sleep(2)
-        goto_latest_window(browser)
         time.sleep(calculateSleep(15))
         close_all_but_main(browser)
         time.sleep(2)
 
     def completeDailySetSurvey():
         """Complete daily set survey"""
-        time.sleep(1)
-        goto_latest_window(browser)
         time.sleep(calculateSleep(8))
         # Accept cookie popup
         if isElementExists(browser, By.ID, 'bnp_container'):
@@ -934,8 +931,6 @@ def completeDailySet(browser: WebDriver):
 
     def completeDailySetQuiz():
         """Complete daily set quiz"""
-        time.sleep(3)
-        goto_latest_window(browser)
         time.sleep(calculateSleep(12))
         if not waitUntilQuizLoads(browser):
             resetTabs(browser)
@@ -996,8 +991,6 @@ def completeDailySet(browser: WebDriver):
 
     def completeDailySetVariableActivity():
         """Complete daily set variable activity"""
-        time.sleep(1)
-        goto_latest_window(browser)
         time.sleep(calculateSleep(10))
         # Accept cookie popup
         if isElementExists(browser, By.ID, 'bnp_container'):
@@ -1045,8 +1038,6 @@ def completeDailySet(browser: WebDriver):
 
     def completeDailySetThisOrThat():
         """Complete daily set this or that"""
-        time.sleep(2)
-        goto_latest_window(browser)
         time.sleep(calculateSleep(25))
         # Accept cookie popup
         if isElementExists(browser, By.ID, 'bnp_container'):
@@ -1292,15 +1283,12 @@ def completeMorePromotions(browser: WebDriver):
         if isElementExists(browser, By.XPATH, '//*[@id="modal-host"]/div[2]/button'):
             browser.find_element(By.XPATH, '//*[@id="modal-host"]/div[2]/button').click()
             return
-        goto_latest_window(browser)
         time.sleep(calculateSleep(15))
         close_all_but_main(browser)
         time.sleep(2)
 
     def completeMorePromotionQuiz():
         """Complete more promotion quiz"""
-        time.sleep(1)
-        goto_latest_window(browser)
         time.sleep(calculateSleep(10))
         if not waitUntilQuizLoads(browser):
             resetTabs(browser)
@@ -1352,8 +1340,6 @@ def completeMorePromotions(browser: WebDriver):
 
     def completeMorePromotionABC():
         """Complete more promotion ABC"""
-        time.sleep(1)
-        goto_latest_window(browser)
         time.sleep(calculateSleep(random.randint(10, 15)))
         waitUntilVisible(browser, By.XPATH,
                          '//*[@id="QuestionPane0"]/div[2]', 15)
@@ -1371,8 +1357,6 @@ def completeMorePromotions(browser: WebDriver):
 
     def completeMorePromotionThisOrThat():
         """Complete more promotion this or that"""
-        time.sleep(1)
-        goto_latest_window(browser)
         time.sleep(calculateSleep(8))
         if not waitUntilQuizLoads(browser):
             resetTabs(browser)
@@ -1835,27 +1819,22 @@ def getRemainingSearches(browser: WebDriver):
     counters = dashboard['userStatus']['counters']
     if not 'pcSearch' in counters:
         return 0, 0
-    progressDesktop = counters['pcSearch'][0]['pointProgress'] + \
-        counters['pcSearch'][1]['pointProgress']
-    targetDesktop = counters['pcSearch'][0]['pointProgressMax'] + \
-        counters['pcSearch'][1]['pointProgressMax']
-    if targetDesktop == 33:
-        # Level 1 EU
+    progressDesktop = counters["pcSearch"][0]["pointProgress"]
+    targetDesktop = counters["pcSearch"][0]["pointProgressMax"]
+    if len(counters["pcSearch"]) >= 2:
+        progressDesktop = progressDesktop + counters["pcSearch"][1]["pointProgress"]
+        targetDesktop = targetDesktop + counters["pcSearch"][1]["pointProgressMax"]
+    if targetDesktop in [30, 90, 102]:
+        # Level 1 or 2 EU/South America
         searchPoints = 3
-    elif targetDesktop == 55:
-        # Level 1 US
-        searchPoints = 5
-    elif targetDesktop == 102:
-        # Level 2 EU
-        searchPoints = 3
-    elif targetDesktop >= 170:
-        # Level 2 US
+    elif targetDesktop == 50 or targetDesktop >= 170 or targetDesktop == 150:
+        # Level 1 or 2 US
         searchPoints = 5
     remainingDesktop = int((targetDesktop - progressDesktop) / searchPoints)
     remainingMobile = 0
-    if dashboard['userStatus']['levelInfo']['activeLevel'] != "Level1":
-        progressMobile = counters['mobileSearch'][0]['pointProgress']
-        targetMobile = counters['mobileSearch'][0]['pointProgressMax']
+    if dashboard["userStatus"]["levelInfo"]["activeLevel"] != "Level1":
+        progressMobile = counters["mobileSearch"][0]["pointProgress"]
+        targetMobile = counters["mobileSearch"][0]["pointProgressMax"]
         remainingMobile = int((targetMobile - progressMobile) / searchPoints)
     return remainingDesktop, remainingMobile
 
