@@ -599,6 +599,7 @@ def getBingInfo(browser: WebDriver):
     maxTries = 5
     for _ in range(maxTries):
         with contextlib.suppress(Exception):
+            print("Looping")
             response = requests.get(
                 "https://www.bing.com/rewards/panelflyout/getuserinfo",
                 cookies=cookies,
