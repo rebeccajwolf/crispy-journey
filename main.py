@@ -1281,7 +1281,7 @@ def completeMorePromotions(browser: WebDriver):
     def completeMorePromotionSearch():
         """Complete more promotion search"""
         time.sleep(2.5)
-        if isElementExists(browser, By.XPATH, '//*[@id="modal-host"]/div[2]/button'):
+        if browser.find_element(By.XPATH, '//*[@id="modal-host"]/div[2]/button').is_displayed():
             browser.find_element(By.XPATH, '//*[@id="modal-host"]/div[2]/button').click()
             return
         time.sleep(calculateSleep(15))
