@@ -519,7 +519,7 @@ def checkBingLogin(browser: WebDriver):
     """Check if logged in to Bing"""
     goToURL(browser, 'https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F')
     time.sleep(calculateSleep(15))
-    if not browser.isElementExists(By.XPATH, '//*[@id="id_s" and @aria-hidden="true"]'):
+    if not isElementExists(browser, By.XPATH, '//*[@id="id_s" and @aria-hidden="true"]'):
         while True:
             goToURL(browser, 'https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F')
             time.sleep(calculateSleep(8))
