@@ -526,9 +526,11 @@ def checkBingLogin(browser: WebDriver):
         if "bing.com" in currentUrl.hostname and currentUrl.path == "/":
             time.sleep(3)
             tryDismissBingCookieBanner(browser)
-            with contextlib.suppress(Exception):
+            try:
                 if checkIfBingLogin(browser):
                     return
+            except Exception as exc:
+                displayError(exc)
         time.sleep(1)
 
 
@@ -598,14 +600,15 @@ def getBingInfo(browser: WebDriver):
     cookies = {cookie["name"]: cookie["value"] for cookie in cookieJar}
     maxTries = 5
     for _ in range(maxTries):
-        with contextlib.suppress(Exception):
-            print("Looping")
+        try:
             response = requests.get(
                 "https://www.bing.com/rewards/panelflyout/getuserinfo",
                 cookies=cookies,
             )
             if response.status_code == requests.codes.ok:
                 return response.json()
+        except Exception as exc:
+            displayError(exc)
         time.sleep(1)
     return None
 
