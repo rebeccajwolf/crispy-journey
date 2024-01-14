@@ -459,7 +459,7 @@ def checkBingLogin(browser: WebDriver):
             time.sleep(3)
             tryDismissBingCookieBanner(browser)
             with contextlib.suppress(Exception):
-                if checkIfBingLogin():
+                if checkIfBingLogin(browser):
                     return
         time.sleep(1)
 
@@ -540,9 +540,9 @@ def getBingInfo(browser: WebDriver):
         time.sleep(1)
     return None
 
-def checkIfBingLogin():
+def checkIfBingLogin(browser: WebDriver):
     # Check if the user is logged in to Bing
-    if data := getBingInfo():
+    if data := getBingInfo(browser):
         return data["userInfo"]["isRewardsUser"]
     else:
         return False
@@ -897,7 +897,7 @@ def completeDailySet(browser: WebDriver):
                     if not waitUntilQuestionRefresh(browser):
                         return
                 time.sleep(calculateSleep(6))
-            elif numberOfOptions == 4:
+            elif numberOfOptions in [2, 3, 4]:
                 correctOption = browser.execute_script(
                     "return _w.rewardsQuizRenderInfo.correctAnswer")
                 for i in range(4):
@@ -1259,7 +1259,7 @@ def completeMorePromotions(browser: WebDriver):
                     if not waitUntilQuestionRefresh(browser):
                         return
                 time.sleep(calculateSleep(6))
-            elif numberOfOptions == 4:
+            elif numberOfOptions in [2, 3, 4]:
                 correctOption = browser.execute_script(
                     "return _w.rewardsQuizRenderInfo.correctAnswer")
                 for i in range(4):
