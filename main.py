@@ -149,7 +149,6 @@ def browserSetup(isMobile: bool = False, proxy: str = None) -> WebDriver:
         user_data = f'--user-data-dir={Path(__file__).parent}/Profiles/{CURRENT_ACCOUNT}/Mobile'
     options.add_argument("--user-agent=" + user_agent)
     options.add_argument('--lang=' + LANG.split("-")[0])
-    options.add_argument('--disable-blink-features=AutomationControlled')
     prefs = {"profile.default_content_setting_values.geolocation" :2,
                     "profile.default_content_setting_values.notifications": 2,
                     "credentials_enable_service": False,
@@ -184,7 +183,6 @@ def browserSetup(isMobile: bool = False, proxy: str = None) -> WebDriver:
 
     options.headless = True if ARGS.headless and ARGS.account_browser is None else False
     options.add_argument('--log-level=3')
-    options.add_argument("--start-maximized")
     options.add_argument("--disable-popup-blocking")
     options.add_argument("--disable-features=UserAgentClientHint")
     if platform.system() == 'Linux':
@@ -516,7 +514,7 @@ def checkRewardsLogin(browser: WebDriver):
     handleFirstVisit(browser)
 
 
-@func_set_timeout(300)
+# @func_set_timeout(300)
 def checkBingLogin(browser: WebDriver):
     """Check if logged in to Bing"""
     goToURL(browser, 'https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F')
@@ -614,10 +612,13 @@ def getBingInfo(browser: WebDriver):
 
 def checkIfBingLogin(browser: WebDriver):
     # Check if the user is logged in to Bing
-    if data := getBingInfo(browser):
-        return data["userInfo"]["isRewardsUser"]
-    else:
-        return False
+    try:
+        if data := getBingInfo(browser):
+            return data["userInfo"]["isRewardsUser"]
+        else:
+            return False
+    except Exception as exc:
+        displayError(exc)
 
 def tryDismissBingCookieBanner(browser: WebDriver):
     # Try to dismiss the Bing cookie banner
