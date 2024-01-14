@@ -517,11 +517,11 @@ def checkRewardsLogin(browser: WebDriver):
 # @func_set_timeout(300)
 def checkBingLogin(browser: WebDriver):
     """Check if logged in to Bing"""
-    goToURL(browser, 'https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F')
+    goToURL(browser, 'http://bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=http%3A%2F%2Fbing.com%2F')
     time.sleep(calculateSleep(15))
     if not isElementExists(browser, By.XPATH, '//*[@id="id_s" and @aria-hidden="true"]'):
         while True:
-            goToURL(browser, 'https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F')
+            goToURL(browser, 'http://bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fbing.com%2F')
             time.sleep(calculateSleep(8))
             tryDismissBingCookieBanner(browser)
             try:
