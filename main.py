@@ -766,7 +766,7 @@ def getDashboardData(browser: WebDriver) -> dict:
     while not dashboard and tries <= 5:
         try:
             dashboard = browser.execute_script("return dashboard")
-        except json.decoder.JSONDecodeError:
+        except:
             tries += 1
             if tries == 6:
                 raise Exception("[ERROR] Could not get dashboard")
