@@ -149,8 +149,8 @@ def browserSetup(isMobile: bool = False, proxy: str = None) -> WebDriver:
         else:
             options.add_argument(
                 f'--user-data-dir={Path(__file__).parent}/Profiles/{CURRENT_ACCOUNT}/Mobile')
-    options.add_argument("user-agent=" + user_agent)
-    options.add_argument('lang=' + LANG.split("-")[0])
+    options.add_argument("--user-agent=" + user_agent)
+    options.add_argument('--lang=' + LANG.split("-")[0])
     options.add_argument('--disable-blink-features=AutomationControlled')
     prefs = {"profile.default_content_setting_values.geolocation" :2,
                     "profile.default_content_setting_values.notifications": 2,
@@ -184,9 +184,8 @@ def browserSetup(isMobile: bool = False, proxy: str = None) -> WebDriver:
                     "[PROXY] Your entered proxy is not working, continuing without proxy.")
     options.add_experimental_option("prefs", prefs)
 
-    if ARGS.headless and ARGS.account_browser is None:
-        options.add_argument("--headless=new")
-    options.add_argument('log-level=3')
+    options.headless = True if ARGS.headless and ARGS.account_browser is None else False
+    options.add_argument('--log-level=3')
     options.add_argument("--start-maximized")
     options.add_argument("--disable-popup-blocking")
     options.add_argument("--disable-features=UserAgentClientHint")
