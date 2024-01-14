@@ -1354,7 +1354,7 @@ def completeMorePromotions(browser: WebDriver):
         """Complete more promotion ABC"""
         time.sleep(1)
         goto_latest_window(browser)
-        time.sleep(calculateSleep(10))
+        time.sleep(calculateSleep(random.randint(10, 15)))
         waitUntilVisible(browser, By.XPATH,
                          '//*[@id="QuestionPane0"]/div[2]', 15)
         counter = str(browser.find_element(By.XPATH, '//*[@id="QuestionPane0"]/div[2]').get_attribute('innerHTML'))[
