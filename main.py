@@ -820,9 +820,9 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
                 browser.find_element(By.ID, 'sb_form_q').clear()
                 time.sleep(1)
             else:
-                goToURL(browser, 'https://bing.com')
+                goToURL(browser, 'http://bing.com/')
         except:
-            goToURL(browser, 'https://bing.com')
+            goToURL(browser, 'http://bing.com/')
         time.sleep(2)
         searchbar = browser.find_element(By.ID, 'sb_form_q')
         print("SearchBar Found!...")
