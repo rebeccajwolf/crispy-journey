@@ -143,13 +143,10 @@ def browserSetup(isMobile: bool = False, proxy: str = None) -> WebDriver:
         options = EdgeOptions()
     else:
         options = uc.ChromeOptions()
-    if ARGS.session or ARGS.account_browser:
-        if not isMobile:
-            options.add_argument(
-                f'--user-data-dir={Path(__file__).parent}/Profiles/{CURRENT_ACCOUNT}/PC')
-        else:
-            options.add_argument(
-                f'--user-data-dir={Path(__file__).parent}/Profiles/{CURRENT_ACCOUNT}/Mobile')
+    if not isMobile:
+        user_data = f'--user-data-dir={Path(__file__).parent}/Profiles/{CURRENT_ACCOUNT}/PC'
+    else:
+        user_data = f'--user-data-dir={Path(__file__).parent}/Profiles/{CURRENT_ACCOUNT}/Mobile'
     options.add_argument("--user-agent=" + user_agent)
     options.add_argument('--lang=' + LANG.split("-")[0])
     options.add_argument('--disable-blink-features=AutomationControlled')
@@ -196,7 +193,7 @@ def browserSetup(isMobile: bool = False, proxy: str = None) -> WebDriver:
     if ARGS.edge:
         browser = edgedriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)
     else:
-        browser = uc.Chrome(driver_executable_path="chromedriver", options=options)
+        browser = uc.Chrome(driver_executable_path="chromedriver", options=options, use_subprocess=False, user_data_dir= user_data if ARGS.session or ARGS.account_browser else None)
     return browser
 
 
@@ -218,7 +215,6 @@ def browserSetupv2(isMobile: bool = False, proxy: str = None) -> WebDriver:
                 f'--user-data-dir={Path(__file__).parent}/Profiles/{CURRENT_ACCOUNT}/Mobile')
     options.add_argument("--user-agent=" + user_agent)
     options.add_argument('--lang=' + LANG.split("-")[0])
-    options.add_argument('--disable-blink-features=AutomationControlled')
     options.add_argument('--disable-blink-features=AutomationControlled')
     prefs = {"profile.default_content_setting_values.geolocation" :2,
             "profile.default_content_setting_values.notifications": 2,
@@ -268,10 +264,7 @@ def browserSetupv2(isMobile: bool = False, proxy: str = None) -> WebDriver:
     if ARGS.edge:
         browser = edgedriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)
     else:
-        try:
-            browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
-        except Exception:
-            browser = webdriver.Chrome(options=options)
+        browser = webdriver.Chrome(options=options)
     return browser
 
 
@@ -530,7 +523,7 @@ def checkBingLogin(browser: WebDriver):
     time.sleep(calculateSleep(15))
     while True:
         currentUrl = urllib.parse.urlparse(browser.current_url)
-        if currentUrl.hostname == "www.bing.com" and currentUrl.path == "/":
+        if "bing.com" in currentUrl.hostname and currentUrl.path == "/":
             time.sleep(3)
             tryDismissBingCookieBanner(browser)
             with contextlib.suppress(Exception):
