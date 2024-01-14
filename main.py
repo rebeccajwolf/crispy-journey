@@ -191,7 +191,7 @@ def browserSetup(isMobile: bool = False, proxy: str = None) -> WebDriver:
     if ARGS.edge:
         browser = edgedriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)
     else:
-        browser = uc.Chrome(driver_executable_path="chromedriver", options=options, use_subprocess=False, user_data_dir= user_data if ARGS.session or ARGS.account_browser else None)
+        browser = uc.Chrome(driver_executable_path="chromedriver", options=options, use_subprocess=False, user_data_dir= user_data if ARGS.session or ARGS.account_browser else None, no_sandbox=False)
     return browser
 
 
