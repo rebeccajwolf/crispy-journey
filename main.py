@@ -1020,10 +1020,9 @@ def completeDailySet(browser: WebDriver):
                         browser.find_element(By.ID, 'bnp_hfly_cta2').click()
                         time.sleep(2)
 
-                    browser.find_element(By.ID, f"questionOptionChoice{question}{random.randint(0, 2)}").click()
-                    time.sleep(random.randint(5, 9))
-                    browser.find_element(By.ID, f"nextQuestionbtn{question}").click()
-                    time.sleep(random.randint(5, 9))
+                    browser.execute_script(
+                f'document.evaluate("//*[@id=\'QuestionPane{str(question)}\']/div[1]/div[2]/a[{str(random.randint(1, 3))}]/div", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()')
+                    time.sleep(random.randint(10, 15))
                 time.sleep(5)
                 close_all_but_main(browser)
                 time.sleep(2)
@@ -1363,10 +1362,9 @@ def completeMorePromotions(browser: WebDriver):
         numberOfQuestions = max([int(s)
                                 for s in counter.split() if s.isdigit()])
         for question in range(numberOfQuestions):
-            browser.find_element(By.ID, f"questionOptionChoice{question}{random.randint(0, 2)}").click()
-            time.sleep(random.randint(5, 9))
-            browser.find_element(By.ID, f"nextQuestionbtn{question}").click()
-            time.sleep(random.randint(5, 9))
+            browser.execute_script(
+                f'document.evaluate("//*[@id=\'QuestionPane{str(question)}\']/div[1]/div[2]/a[{str(random.randint(1, 3))}]/div", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()')
+            time.sleep(random.randint(10, 15))
         time.sleep(random.randint(5, 9))
         close_all_but_main(browser)
         time.sleep(2)
