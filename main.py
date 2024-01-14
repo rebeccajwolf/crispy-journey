@@ -189,6 +189,7 @@ def browserSetup(isMobile: bool = False, proxy: str = None) -> WebDriver:
     options.add_argument("--start-maximized")
     options.add_argument("--disable-popup-blocking")
     options.add_argument("--disable-features=UserAgentClientHint")
+    options.add_argument("--incognito")
     if platform.system() == 'Linux':
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
