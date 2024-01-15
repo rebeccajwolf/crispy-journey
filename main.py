@@ -820,12 +820,11 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
                 browser.find_element(By.ID, 'sb_form_q').clear()
                 time.sleep(1)
             else:
-                goToURL(browser, 'http://bing.com/')
+                goToURL(browser, 'https://www.bing.com')
         except:
-            goToURL(browser, 'http://bing.com/')
+            goToURL(browser, 'https://www.bing.com')
         time.sleep(2)
         searchbar = browser.find_element(By.ID, 'sb_form_q')
-        print("SearchBar Found!...")
         if FAST or SUPER_FAST:
             searchbar.send_keys(word)
             time.sleep(calculateSleep(1))
@@ -2884,7 +2883,7 @@ def farmer():
                 updateLogs()
             prYellow('********************' + hide_email(CURRENT_ACCOUNT) + '********************')
             if not LOGS[CURRENT_ACCOUNT]['PC searches']:
-                browser = browserSetupv2(
+                browser = browserSetup(
                     False,
                     account.get('proxy', None)
                 )
@@ -2948,7 +2947,7 @@ def farmer():
                 browser.quit()
 
             if MOBILE:
-                browser = browserSetupv2(
+                browser = browserSetup(
                     True,
                     account.get('proxy', None)
                 )
