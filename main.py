@@ -517,11 +517,11 @@ def checkRewardsLogin(browser: WebDriver):
 # @func_set_timeout(300)
 def checkBingLogin(browser: WebDriver):
     """Check if logged in to Bing"""
-    goToURL(browser, 'http://bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=http%3A%2F%2Fbing.com%2F')
+    goToURL(browser, 'https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F')
     time.sleep(calculateSleep(15))
     if not isElementExists(browser, By.XPATH, '//*[@id="id_s" and @aria-hidden="true"]'):
         while True:
-            goToURL(browser, 'http://bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fbing.com%2F')
+            goToURL(browser, 'https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F')
             time.sleep(calculateSleep(8))
             tryDismissBingCookieBanner(browser)
             try:
@@ -902,10 +902,12 @@ def completeDailySet(browser: WebDriver):
     def completeDailySetSearch():
         """Complete daily set search"""
         time.sleep(2)
-        if isElementExists(browser, By.XPATH, '//*[@id="modal-host"]/div[2]/button'):
-            browser.find_element(By.XPATH, '//*[@id="modal-host"]/div[2]/button').click()
-            return
-        time.sleep(2)
+        try:
+            if browser.find_element(By.XPATH, '//*[@id="modal-host"]/div[2]/button').is_displayed():
+                browser.find_element(By.XPATH, '//*[@id="modal-host"]/div[2]/button').click()
+                return
+        except:
+            pass
         time.sleep(calculateSleep(15))
         close_all_but_main(browser)
         time.sleep(2)
