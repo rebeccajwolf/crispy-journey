@@ -13,6 +13,7 @@ RUN apk update && apk add --no-cache bash \
   curl \
   coreutils \
   gtk+2.0 \
+  openssl \
   gdk-pixbuf \
   python3-tkinter \
   tzdata \
